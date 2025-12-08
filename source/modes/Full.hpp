@@ -20,6 +20,9 @@ private:
     char SOC_temperature_c[32] = "";
     char PCB_temperature_c[32] = "";
     char skin_temperature_c[32] = "";
+	char CPU_temp_c[32] = "";
+	char GPU_temp_c[32] = "";
+	char RAM_temp_c[32] = "";
     char BatteryDraw_c[64] = "";
     char FPS_var_compressed_c[64] = "";
     char RAM_load_c[64] = "";
@@ -291,6 +294,41 @@ public:
                     renderer->drawString(PCB_temperature_c, false, current_x, 620+2, 15, pcbColor);
                 }
             }
+			
+			// Real temps - CPU, GPU, RAM
+			if (settings.realTemps && (realCPU_Temp != 0 || realGPU_Temp != 0 || realRAM_Temp != 0)) {
+				static auto cpuTempLabelWidth = renderer->getTextDimensions("CPU  ", false, 15).first;
+				static auto gpuTempLabelWidth = renderer->getTextDimensions("GPU  ", false, 15).first;
+				static auto ramTempLabelWidth = renderer->getTextDimensions("RAM  ", false, 15).first;
+    
+				uint32_t current_x = COMMON_MARGIN + 58;;
+				
+			// CPU temp
+			if (realCPU_Temp != 0) {
+				const tsl::Color cpuTempColor = settings.useDynamicColors ? tsl::GradientColor(realCPU_Temp / 1000.0f) : settings.textColor;
+				renderer->drawString("CPU  ", false, current_x, 635+2, 15, (settings.catColor2));
+				current_x += cpuTempLabelWidth;
+				renderer->drawString(CPU_temp_c, false, current_x, 635+2, 15, cpuTempColor);
+				current_x += renderer->getTextDimensions(CPU_temp_c, false, 15).first + 15;
+			}
+    
+			// GPU temp
+			if (realGPU_Temp != 0) {
+				const tsl::Color gpuTempColor = settings.useDynamicColors ? tsl::GradientColor(realGPU_Temp / 1000.0f) : settings.textColor;
+				renderer->drawString("GPU  ", false, current_x, 635+2, 15, (settings.catColor2));
+				current_x += gpuTempLabelWidth;
+				renderer->drawString(GPU_temp_c, false, current_x, 635+2, 15, gpuTempColor);
+				current_x += renderer->getTextDimensions(GPU_temp_c, false, 15).first + 15;
+			}
+    
+			// RAM temp
+			if (realRAM_Temp != 0) {
+				const tsl::Color ramTempColor = settings.useDynamicColors ? tsl::GradientColor(realRAM_Temp / 1000.0f) : settings.textColor;
+				renderer->drawString("RAM  ", false, current_x, 635+2, 15, (settings.catColor2));
+				current_x += ramTempLabelWidth;
+				renderer->drawString(RAM_temp_c, false, current_x, 635+2, 15, ramTempColor);
+				}
+			}
             
             ///FPS
             if (GameRunning) {
@@ -347,7 +385,7 @@ public:
             renderer->drawString(" to Exit", false, baseX + pressWidth + keyComboWidth, baseY, fontSize, (tsl::bottomTextColor));
         });
         
-        auto rootFrame = new tsl::elm::HeaderOverlayFrame("Status Monitor", APP_VERSION);
+        auto rootFrame = new tsl::elm::HeaderOverlayFrame("Status Monitor Pro", APP_VERSION);
         rootFrame->setContent(Status);
 
         return rootFrame;
@@ -460,6 +498,17 @@ public:
 
         snprintf(Rotation_SpeedLevel_c, sizeof Rotation_SpeedLevel_c, "%.1f%%", Rotation_Duty);
         
+		if (settings.realTemps) {
+			if (realCPU_Temp != 0) {
+				snprintf(CPU_temp_c, sizeof(CPU_temp_c), "%.1f°C", realCPU_Temp / 1000.0f);
+			}
+			if (realGPU_Temp != 0) {
+				snprintf(GPU_temp_c, sizeof(GPU_temp_c), "%.1f°C", realGPU_Temp / 1000.0f);
+			}
+			if (realRAM_Temp != 0) {
+				snprintf(RAM_temp_c, sizeof(RAM_temp_c), "%.1f°C", realRAM_Temp / 1000.0f);
+			}
+		}
         ///FPS
         if (settings.showFPS == true) {
             snprintf(PFPS_value_c, sizeof PFPS_value_c, "%1u", FPS);

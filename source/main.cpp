@@ -128,7 +128,7 @@ public:
         //    list->addItem(Res);
         //}
         //tsl::elm::g_disableMenuCacheOnReturn.store(true, std::memory_order_release);
-        tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("Status Monitor", "Modes");
+        tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("Status Monitor Pro", "Modes");
         if (!lastSelectedItem.empty())
             list->jumpToItem(lastSelectedItem);
 
@@ -371,7 +371,7 @@ public:
             list->jumpToItem(lastSelectedItem);
 
         //list->disableCaching();
-        tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("Status Monitor", APP_VERSION);
+        tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("Status Monitor Pro", APP_VERSION);
         rootFrame->setContent(list);
 
         return rootFrame;

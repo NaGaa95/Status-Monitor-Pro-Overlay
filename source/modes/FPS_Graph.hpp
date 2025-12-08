@@ -13,6 +13,9 @@ private:
     char SOC_TEMP_c[12] = "    -";
     char PCB_TEMP_c[12] = "    -";
     char SKIN_TEMP_c[12] = "    -";
+	char CPU_TEMP_c[12] = "    -";
+	char GPU_TEMP_c[12] = "    -";
+	char RAM_TEMP_c[12] = "    -";
     bool skipOnce = true;
     bool runOnce = true;
     
@@ -402,19 +405,37 @@ public:
                 renderer->drawString("RAM", false, info_x, startY + lineHeight * 2+2*SPACING, fontSize, settings.catColor);
                 renderer->drawString(RAM_Load_c, false, value_x, startY + lineHeight * 2+2*SPACING, fontSize, settings.textColor);
                 
-                // Line 3: SOC (with gradient color)
-                renderer->drawString("SOC", false, info_x, startY + lineHeight * 3+3*SPACING, fontSize, settings.catColor);
-                renderer->drawString(SOC_TEMP_c, false, value_x, startY + lineHeight * 3+3*SPACING, fontSize, socColor);
-                
-                // Line 4: PCB (with gradient color)
-                renderer->drawString("PCB", false, info_x, startY + lineHeight * 4+4*SPACING, fontSize, settings.catColor);
-                renderer->drawString(PCB_TEMP_c, false, value_x, startY + lineHeight * 4+4*SPACING, fontSize, pcbColor);
-                
-                // Line 5: SKIN (with gradient color)
-                renderer->drawString("Skin", false, info_x, startY + lineHeight * 5+5*SPACING, fontSize, settings.catColor);
-                renderer->drawString(SKIN_TEMP_c, false, value_x, startY + lineHeight * 5+5*SPACING, fontSize, skinColor);
-            }
-        });
+                // Line 3: CPU or SOC (with gradient color)
+				if (settings.realTemps && realCPU_Temp != 0) {
+					const tsl::Color cpuTempColor = settings.useDynamicColors ? tsl::GradientColor(realCPU_Temp / 1000.0f) : settings.textColor;
+					renderer->drawString("CPU", false, info_x, startY + lineHeight * 3+3*SPACING, fontSize, settings.catColor);
+					renderer->drawString(CPU_TEMP_c, false, value_x, startY + lineHeight * 3+3*SPACING, fontSize, cpuTempColor);
+				} else {
+					renderer->drawString("SOC", false, info_x, startY + lineHeight * 3+3*SPACING, fontSize, settings.catColor);
+					renderer->drawString(SOC_TEMP_c, false, value_x, startY + lineHeight * 3+3*SPACING, fontSize, socColor);
+				}
+
+				// Line 4: GPU or PCB (with gradient color)
+				if (settings.realTemps && realGPU_Temp != 0) {
+					const tsl::Color gpuTempColor = settings.useDynamicColors ? tsl::GradientColor(realGPU_Temp / 1000.0f) : settings.textColor;
+					renderer->drawString("GPU", false, info_x, startY + lineHeight * 4+4*SPACING, fontSize, settings.catColor);
+					renderer->drawString(GPU_TEMP_c, false, value_x, startY + lineHeight * 4+4*SPACING, fontSize, gpuTempColor);
+				} else {
+					renderer->drawString("PCB", false, info_x, startY + lineHeight * 4+4*SPACING, fontSize, settings.catColor);
+					renderer->drawString(PCB_TEMP_c, false, value_x, startY + lineHeight * 4+4*SPACING, fontSize, pcbColor);
+				}
+
+				// Line 5: RAM or SKIN (with gradient color)
+				if (settings.realTemps && realRAM_Temp != 0) {
+					const tsl::Color ramTempColor = settings.useDynamicColors ? tsl::GradientColor(realRAM_Temp / 1000.0f) : settings.textColor;
+					renderer->drawString("RAM", false, info_x, startY + lineHeight * 5+5*SPACING, fontSize, settings.catColor);
+					renderer->drawString(RAM_TEMP_c, false, value_x, startY + lineHeight * 5+5*SPACING, fontSize, ramTempColor);
+				} else {
+					renderer->drawString("Skin", false, info_x, startY + lineHeight * 5+5*SPACING, fontSize, settings.catColor);
+					renderer->drawString(SKIN_TEMP_c, false, value_x, startY + lineHeight * 5+5*SPACING, fontSize, skinColor);
+				}
+			}
+		});
 
         tsl::elm::HeaderOverlayFrame* rootFrame = new tsl::elm::HeaderOverlayFrame("", "");
         rootFrame->setContent(Status);
@@ -470,6 +491,16 @@ public:
         snprintf(PCB_TEMP_c, sizeof PCB_TEMP_c, "%2.1f\u00B0C", PCB_temperatureF);
         snprintf(SKIN_TEMP_c, sizeof SKIN_TEMP_c, "%2d.%d\u00B0C", 
                  skin_temperaturemiliC / 1000, (skin_temperaturemiliC / 100) % 10);
+				 
+		if (realCPU_Temp != 0) {
+			snprintf(CPU_TEMP_c, sizeof(CPU_TEMP_c), "%.1f\u00B0C", realCPU_Temp / 1000.0f);
+		}
+		if (realGPU_Temp != 0) {
+			snprintf(GPU_TEMP_c, sizeof(GPU_TEMP_c), "%.1f\u00B0C", realGPU_Temp / 1000.0f);
+		}
+		if (realRAM_Temp != 0) {
+			snprintf(RAM_TEMP_c, sizeof(RAM_TEMP_c), "%.1f\u00B0C", realRAM_Temp / 1000.0f);
+		}
         
         // Atomically snapshot each idle tick once
         const uint64_t idle0 = idletick0.load(std::memory_order_acquire);

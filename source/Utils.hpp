@@ -765,6 +765,10 @@ void Misc3(void*) {
             if (R_SUCCEEDED(sysclkIpcGetCurrentContext(&sysclkCTX))) {
                 ramLoad[SysClkRamLoad_All] = sysclkCTX.ramLoad[SysClkRamLoad_All];
                 ramLoad[SysClkRamLoad_Cpu] = sysclkCTX.ramLoad[SysClkRamLoad_Cpu];
+				
+				realCPU_Temp = sysclkCTX.reserved[0];
+				realGPU_Temp = sysclkCTX.reserved[1];
+				realRAM_Temp = sysclkCTX.reserved[2];
                 
                 // Get voltages from sys-clk if using EOS
                 if (isUsingEOS && realVoltsPolling) {
@@ -1363,6 +1367,7 @@ struct FullSettings {
     bool setPosRight;
     bool showRealFreqs;
     bool realVolts; 
+	bool realTemps;
     bool showDeltas;
     bool showTargetFreqs;
     bool showFPS;
@@ -1459,6 +1464,7 @@ struct FpsCounterSettings {
 
 struct FpsGraphSettings {
     bool showInfo;
+	bool realTemps;
     uint8_t refreshRate;
     uint16_t backgroundColor;
     uint16_t focusBackgroundColor;
@@ -2187,6 +2193,7 @@ ALWAYS_INLINE void GetConfigSettings(FpsCounterSettings* settings) {
 ALWAYS_INLINE void GetConfigSettings(FpsGraphSettings* settings) {
     // Initialize defaults
     settings->showInfo = true;
+	settings->realTemps = false;
     //settings->setPos = 0;
     convertStrToRGBA4444("#0009", &(settings->backgroundColor));
     convertStrToRGBA4444("#000F", &(settings->focusBackgroundColor));
@@ -2265,6 +2272,15 @@ ALWAYS_INLINE void GetConfigSettings(FpsGraphSettings* settings) {
         convertToUpper(key);
         settings->showInfo = (key == "TRUE");
     }
+	
+	    it = section.find("real_temps");
+    if (it != section.end()) {
+        key = it->second;
+        convertToUpper(key);
+        settings->realTemps = (key == "TRUE");
+    }
+
+    it = section.find("use_dynamic_colors");
 
     it = section.find("use_dynamic_colors");
     if (it != section.end()) {
@@ -2333,6 +2349,7 @@ ALWAYS_INLINE void GetConfigSettings(FullSettings* settings) {
     settings->setPosRight = false;
     settings->refreshRate = 1;
     settings->showRealFreqs = true;
+	settings->realTemps = false;
     settings->showDeltas = true;
     settings->showTargetFreqs = true;
     settings->showFPS = true;
@@ -2391,6 +2408,13 @@ ALWAYS_INLINE void GetConfigSettings(FullSettings* settings) {
         settings->showRealFreqs = !(key == "FALSE");
     }
     
+	it = section.find("real_temps");
+	if (it != section.end()) {
+		key = it->second;
+		convertToUpper(key);
+		settings->realTemps = (key == "TRUE");
+	}
+	
     it = section.find("show_deltas");
     if (it != section.end()) {
         key = it->second;

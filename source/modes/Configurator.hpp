@@ -157,7 +157,7 @@ public:
         
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Alpha");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Alpha");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -262,7 +262,7 @@ public:
         // Jump to currently selected item
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "DTC Format");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "DTC Format");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -314,6 +314,12 @@ public:
                 ult::setIniFileValue(configIniPath, "fps-graph", "show_info", state ? "true" : "false");
             });
             list->addItem(showInfo);
+			
+		    auto* realTemps = new tsl::elm::ToggleListItem("Real Temperatures", getCurrentFPSGraphRealTemps());
+			realTemps->setStateChangedListener([this](bool state) {
+				ult::setIniFileValue(configIniPath, "fps-graph", "real_temps", state ? "true" : "false");
+			});
+			list->addItem(realTemps);
 
             auto* dynamicColors = new tsl::elm::ToggleListItem("Use Dynamic Colors", getCurrentUseDynamicColors());
             dynamicColors->setStateChangedListener([this](bool state) {
@@ -335,6 +341,12 @@ public:
             });
             list->addItem(realFreqs);
             
+			auto* realTemps = new tsl::elm::ToggleListItem("Real Temperatures", getCurrentFullRealTemps());
+			realTemps->setStateChangedListener([this](bool state) {
+				ult::setIniFileValue(configIniPath, "full", "real_temps", state ? "true" : "false");
+			});
+			list->addItem(realTemps);
+			
             auto* showDeltas = new tsl::elm::ToggleListItem("Deltas", getCurrentShowDeltas());
             showDeltas->setStateChangedListener([this](bool state) {
                 ult::setIniFileValue(configIniPath, "full", "show_deltas", state ? "true" : "false");
@@ -500,7 +512,7 @@ public:
             jumpItemExactMatch = false;
         }
 
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Configuration");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -523,6 +535,13 @@ private:
         convertToUpper(value);
         return value == "TRUE";
     }
+	
+	bool getCurrentFPSGraphRealTemps() {
+		std::string value = ult::parseValueFromIniSection(configIniPath, "fps-graph", "real_temps");
+		if (value.empty()) return false;
+		convertToUpper(value);
+		return value == "TRUE";
+	}
     
     bool getCurrentRealFreqs() {
         const std::string section = isMiniMode ? "mini" : "micro";
@@ -649,6 +668,13 @@ private:
         convertToUpper(value);
         return value != "FALSE";
     }
+	
+	bool getCurrentFullRealTemps() {
+		std::string value = ult::parseValueFromIniSection(configIniPath, "full", "real_temps");
+		if (value.empty()) return false;
+		convertToUpper(value);
+		return value == "TRUE";
+	}
     
     bool getCurrentShowDeltas() {
         std::string value = ult::parseValueFromIniSection(configIniPath, "full", "show_deltas");
@@ -759,7 +785,7 @@ public:
         
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
 
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Configuration");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -822,7 +848,7 @@ public:
         
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
 
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Configuration");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -910,7 +936,7 @@ public:
         
         list->jumpToItem("", ult::CHECKMARK_SYMBOL, false);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Font Sizes");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Font Sizes");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -983,7 +1009,7 @@ public:
         });
         list->addItem(dockedItem);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Configuration");
         rootFrame->setContent(list);
         list->jumpToItem(jumpItemName, jumpItemValue, jumpItemExactMatch);
         {
@@ -1195,7 +1221,7 @@ public:
         }
         list->jumpToItem("", _jumpItemValue, false);
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Colors");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Colors");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -1601,7 +1627,7 @@ public:
         }
         
         //list->disableCaching();
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Configuration");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -1794,7 +1820,7 @@ public:
             jumpItemExactMatch = false;
         }
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", "Configuration");
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", "Configuration");
         rootFrame->setContent(list);
         return rootFrame;
     }
@@ -2036,7 +2062,7 @@ public:
             jumpItemExactMatch = false;
         }
         
-        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor", modeName);
+        tsl::elm::OverlayFrame* rootFrame = new tsl::elm::OverlayFrame("Status Monitor Pro", modeName);
         rootFrame->setContent(list);
         return rootFrame;
     }
